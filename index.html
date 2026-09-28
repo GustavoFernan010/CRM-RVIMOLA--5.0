@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM RV Ímola - Login</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="48x48" href="RV IMOLA_Prancheta 1 (1).png">
+    <link rel="icon" type="image/png" sizes="64x64" href="RV IMOLA_Prancheta 1 (1).png">
+    <link rel="icon" type="image/png" sizes="192x192" href="RV IMOLA_Prancheta 1 (1).png">
+    <style>
+        :root {
+            /* Mesma paleta oficial usada no CRM (rvimola.com.br):
+               azul-marinho como cor principal + ciano como destaque. */
+            --primary-blue: #0490d5;
+            --dark-blue: #1D3165;
+            --light-blue: #e6f4fb;
+            --white: #ffffff;
+            --danger: #dc3545;
+            --success: #28a745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cabin', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-blue) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Formas suaves de fundo, só pra dar profundidade — decorativo,
+           não interfere em nada clicável (pointer-events: none). */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(10px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::before {
+            width: 480px;
+            height: 480px;
+            background: rgba(255, 255, 255, 0.06);
+            top: -160px;
+            right: -140px;
+        }
+
+        body::after {
+            width: 380px;
+            height: 380px;
+            background: rgba(255, 255, 255, 0.05);
+            bottom: -140px;
+            left: -120px;
+        }
+
+        .auth-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-card {
+            background: var(--white);
+            border-radius: 22px;
+            padding: 44px 40px 36px;
+            box-shadow: 0 25px 60px rgba(10, 20, 50, 0.35);
+            width: 90%;
+            max-width: 440px;
+            text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .auth-topbar {
+            height: 6px;
+            border-radius: 22px 22px 0 0;
+            background: linear-gradient(90deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            margin: -44px -40px 28px;
+        }
+
+        .auth-card img {
+            display: block;
+            margin: 0 auto 18px auto;
+            max-width: 230px;
+            height: auto;
+        }
+
+        .auth-welcome {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--dark-blue);
+            margin-bottom: 4px;
+        }
+
+        .auth-subtitle {
+            font-size: 0.86rem;
+            color: #7c8aa3;
+            margin-bottom: 28px;
+        }
+
+        .auth-form {
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--dark-blue);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .input-icon-wrap {
+            position: relative;
+        }
+
+        .input-icon-wrap i.field-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a9b6cc;
+            font-size: 0.95rem;
+            pointer-events: none;
+            transition: color 0.2s ease;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 13px 15px 13px 42px;
+            border: 2px solid #e7ecf3;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: #fbfcfe;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(4, 144, 213, 0.12);
+        }
+
+        .form-group input:focus~i.field-icon,
+        .input-icon-wrap:focus-within i.field-icon {
+            color: var(--primary-blue);
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #a9b6cc;
+            font-size: 1.05rem;
+            transition: color 0.3s ease;
+            z-index: 10;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-blue);
+        }
+
+        .password-container input {
+            padding-right: 46px;
+        }
+
+        .auth-button {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-family: inherit;
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-top: 6px;
+            margin-bottom: 15px;
+        }
+
+        .auth-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(4, 144, 213, 0.35);
+        }
+
+        .auth-button:disabled {
+            background: #cbd3e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .message {
+            font-size: 0.88rem;
+            margin-top: 10px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .error {
+            color: #a4222f;
+            background: #fceaec;
+            border: 1px solid #f3c2c8;
+        }
+
+        .success {
+            color: #1a6f3c;
+            background: #e3f6ea;
+            border: 1px solid #bfe6cd;
+        }
+
+        @media (max-width: 768px) {
+            .auth-card {
+                padding: 36px 24px 28px;
+                margin: 10px;
+                max-width: 95%;
+            }
+
+            .auth-topbar {
+                margin: -36px -24px 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 30px 18px 24px;
+                margin: 5px;
+                border-radius: 18px;
+            }
+
+            .auth-topbar {
+                margin: -30px -18px 20px;
+                border-radius: 18px 18px 0 0;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .form-group input {
+                padding: 12px 12px 12px 40px;
+                font-size: 0.9rem;
+            }
+
+            .auth-button {
+                padding: 12px;
+                font-size: 1rem;
+            }
+
+            .auth-card img {
+                max-width: 190px;
+            }
+        }
+
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
+        }
+
+        input[type="password"]::-webkit-credentials-auto-fill-button {
+            display: none !important;
+            visibility: hidden;
+            pointer-events: none;
+            position: absolute;
+            right: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-topbar"></div>
+            <img src="Logo-RVImola-02.png" width="250px" height="80px" alt="RV Ímola Logística">
+            <div class="auth-welcome">Bem-vindo de volta</div>
+            <div class="auth-subtitle">Acesse sua conta para continuar</div>
+            <div class="auth-form">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <div class="input-icon-wrap">
+                        <i class="fas fa-envelope field-icon"></i>
+                        <input type="email" id="loginEmail" required placeholder="seuemail@rvimola.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <div class="password-container input-icon-wrap">
+                        <i class="fas fa-lock field-icon"></i>
+                        <input type="password" id="loginPassword" required autocomplete="new-password" placeholder="••••••••">
+                        <i class="fas fa-eye password-toggle" onclick="togglePassword('loginPassword', this)"></i>
+                    </div>
+                </div>
+                <button type="button" class="auth-button" onclick="login()" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Entrar no CRM
+                </button>
+                <div id="loginMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        // COLE A URL DA SUA API AQUI
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxjq5tRsyCUE3B01sa2URy23gTSqMuEJ5O77j-sUAmFqApobCUO3fS4k4mSF-t7NCS1/exec';
+
+        async function login() {
+            console.log('Iniciando login...');
+
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const messageDiv = document.getElementById('loginMessage');
+            const loginBtn = document.getElementById('loginBtn');
+
+            if (!email || !password) {
+                messageDiv.innerHTML = '<div class="message error">Por favor, preencha email e senha</div>';
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+
+            try {
+                // AUTENTICAR NA API
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'authenticate',
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Salvar usuário logado
+                    localStorage.setItem('rvImola_currentUser', JSON.stringify(result.user));
+
+                    messageDiv.innerHTML = '<div class="message success">Login realizado! Redirecionando...</div>';
+
+                    setTimeout(() => {
+                        window.location.href = 'asalvacao.html';
+                    }, 1000);
+
+                } else {
+                    // Tentar login local como fallback
+                    const usuarios = initializeLocalUsers();
+                    const usuarioLocal = usuarios.find(user =>
+                        user.email.toLowerCase() === email.toLowerCase() &&
+                        user.senha === password &&
+                        user.ativo.toUpperCase() === 'SIM'
+                    );
+
+                    if (usuarioLocal) {
+                        localStorage.setItem('rvImola_currentUser', JSON.stringify(usuarioLocal));
+                        messageDiv.innerHTML = '<div class="message success">Login realizado (modo local)! Redirecionando...</div>';
+
+                        setTimeout(() => {
+                            window.location.href = 'asalvacao.html';
+                        }, 1000);
+                    } else {
+                        messageDiv.innerHTML = '<div class="message error">Email ou senha incorretos</div>';
+                        loginBtn.disabled = false;
+                        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar no CRM';
+                    }
+                }
+
+            } catch (error) {
+                console.error('Erro na autenticação:', error);
+                messageDiv.innerHTML = '<div class="message error">Erro ao conectar. Tentando modo offline...</div>';
+
+                // Fallback para login local
+                const usuarios = initializeLocalUsers();
+                const usuarioLocal = usuarios.find(user =>
+                    user.email.toLowerCase() === email.toLowerCase() &&
+                    user.senha === password
+                );
+
+                if (usuarioLocal) {
+                    localStorage.setItem('rvImola_currentUser', JSON.stringify(usuarioLocal));
+                    setTimeout(() => window.location.href = 'crm.html', 1000);
+                } else {
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar no CRM';
+                }
+            }
+        }
+
+        // Sistema de proteção de dados
+        function protectDataFromAuth() {
+            console.log('🛡️ Protegendo dados...');
+
+            try {
+                const backupData = {
+                    clients: localStorage.getItem('rvImola_clients'),
+                    leads: localStorage.getItem('rvImola_leads'),
+                    perdidos: localStorage.getItem('rvImola_perdidos'),
+                    team: localStorage.getItem('rvImola_team'),
+                    meetings: localStorage.getItem('rvImola_meetings')
+                };
+
+                localStorage.setItem('rvImola_backup_data', JSON.stringify(backupData));
+                console.log('💾 Backup dos dados criado');
+                return backupData;
+
+            } catch (error) {
+                console.error('❌ Erro ao criar backup:', error);
+                return null;
+            }
+        }
+
+        function restoreDataAfterAuth() {
+            console.log('🔄 Restaurando dados...');
+
+            try {
+                const backupData = JSON.parse(localStorage.getItem('rvImola_backup_data') || '{}');
+
+                if (backupData.clients) {
+                    localStorage.setItem('rvImola_clients', backupData.clients);
+                    window.clients = JSON.parse(backupData.clients);
+                }
+
+                if (backupData.leads) {
+                    localStorage.setItem('rvImola_leads', backupData.leads);
+                    window.leads = JSON.parse(backupData.leads);
+                }
+
+                if (backupData.perdidos) {
+                    localStorage.setItem('rvImola_perdidos', backupData.perdidos);
+                    window.perdidos = JSON.parse(backupData.perdidos);
+                }
+
+                if (backupData.team) {
+                    localStorage.setItem('rvImola_team', backupData.team);
+                    window.team = JSON.parse(backupData.team);
+                }
+
+                if (backupData.meetings) {
+                    localStorage.setItem('rvImola_meetings', backupData.meetings);
+                    window.meetings = JSON.parse(backupData.meetings);
+                }
+
+                console.log('✅ Dados restaurados com sucesso');
+                localStorage.removeItem('rvImola_backup_data');
+                return true;
+
+            } catch (error) {
+                console.error('❌ Erro ao restaurar dados:', error);
+                return false;
+            }
+        }
+
+        function loadDataProtected() {
+            console.log('📂 Carregando dados...');
+
+            try {
+                let clientsData = localStorage.getItem('rvImola_clients');
+
+                if (!clientsData || clientsData === 'null' || clientsData === 'undefined') {
+                    console.log('⚠️ Dados corrompidos, tentando restaurar backup...');
+                    restoreDataAfterAuth();
+                    clientsData = localStorage.getItem('rvImola_clients');
+                }
+
+                if (clientsData) {
+                    try {
+                        const parsedClients = JSON.parse(clientsData);
+                        if (Array.isArray(parsedClients)) {
+                            window.clients = parsedClients.map((client, index) => ({
+                                ...client,
+                                id: client.id || (Date.now() + index)
+                            }));
+                        } else {
+                            throw new Error('Dados não são um array válido');
+                        }
+                    } catch (parseError) {
+                        console.error('❌ Erro ao parsear clientes:', parseError);
+                        window.clients = [];
+                    }
+                } else {
+                    window.clients = [];
+                }
+
+                window.leads = JSON.parse(localStorage.getItem('rvImola_leads') || '[]');
+                window.perdidos = JSON.parse(localStorage.getItem('rvImola_perdidos') || '[]');
+                window.team = JSON.parse(localStorage.getItem('rvImola_team') || '[]');
+                window.meetings = JSON.parse(localStorage.getItem('rvImola_meetings') || '[]');
+
+                console.log(`✅ Dados carregados: ${clients.length} clientes, ${leads.length} leads`);
+
+            } catch (error) {
+                console.error('❌ Erro ao carregar dados:', error);
+                window.clients = [];
+                window.leads = [];
+                window.perdidos = [];
+                window.team = [];
+                window.meetings = [];
+            }
+        }
+
+        function monitorLocalStorageChanges() {
+            const originalSetItem = localStorage.setItem;
+
+            localStorage.setItem = function (key, value) {
+                if (key.startsWith('rvImola_') && key !== 'rvImola_currentUser' && key !== 'rvImola_sessionData') {
+                    if (value === 'null' || value === 'undefined' || value === '') {
+                        console.log('❌ Tentativa de corromper dados bloqueada para:', key);
+                        return;
+                    }
+                }
+                return originalSetItem.call(this, key, value);
+            };
+        }
+
+        function initSecureSystem() {
+            console.log('🚀 Inicializando sistema...');
+            monitorLocalStorageChanges();
+            protectDataFromAuth();
+            loadDataProtected();
+
+            setTimeout(() => {
+                if (!Array.isArray(window.clients) || window.clients.length === 0) {
+                    console.log('⚠️ Verificando integridade dos dados...');
+                    restoreDataAfterAuth();
+                    loadDataProtected();
+                }
+                console.log('✅ Sistema inicializado!');
+            }, 1000);
+        }
+
+        // Inicializar usuários locais (você pode adicionar ou remover usuários aqui)
+        function initializeLocalUsers() {
+            const localUsersKey = 'rvImola_localUsers';
+            let users = JSON.parse(localStorage.getItem(localUsersKey) || '[]');
+
+            // Se não houver usuários, criar usuário padrão
+            if (users.length === 0) {
+                users = [
+                    {
+                        nome: "Administrador",
+                        email: "admin@rvimola.com",
+                        senha: "123",
+                        cargo: "Diretor",
+                        ativo: "SIM"
+                    }
+                ];
+                localStorage.setItem(localUsersKey, JSON.stringify(users));
+            }
+
+            return users;
+        }
+
+        function redirectToCRM() {
+            window.location.href = 'asalvacao.html';
+        }
+
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Sistema de login RV Ímola carregado!');
+            initSecureSystem();
+
+            const savedUser = localStorage.getItem('rvImola_currentUser');
+            if (savedUser) {
+                console.log('Usuário já logado, redirecionando...');
+                redirectToCRM();
+            }
+        });
+
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+
+        function togglePassword(inputId, toggleIcon) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = toggleIcon;
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+
+        window.protectDataFromAuth = protectDataFromAuth;
+        window.restoreDataAfterAuth = restoreDataAfterAuth;
+        window.loadDataProtected = loadDataProtected;
+
+        console.log('🛡️ Sistema de proteção de dados ativo!');
+
+
+    </script>
+</body>
+
+</html>
